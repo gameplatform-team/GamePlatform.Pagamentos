@@ -1,3 +1,5 @@
+using GamePlatform.Pagamentos.Domain.Enums;
+
 namespace GamePlatform.Pagamentos.Domain.Entities;
 
 public class Pagamento : BaseEntity

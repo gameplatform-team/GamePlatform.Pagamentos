@@ -1,6 +1,9 @@
 using GamePlatform.Pagamentos.Application.DTOs;
+using GamePlatform.Pagamentos.Application.DTOs.Messaging;
 using GamePlatform.Pagamentos.Application.DTOs.Pagamento;
 using GamePlatform.Pagamentos.Application.Interfaces.Services;
+using GamePlatform.Pagamentos.Domain.Entities;
+using GamePlatform.Pagamentos.Domain.Enums;
 using GamePlatform.Pagamentos.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -35,5 +38,14 @@ public class PagamentoService : IPagamentoService
         };
         
         return new DataResponseDto<PagamentoDto>(true, string.Empty, pagamentoDto);
+    }
+
+    public async Task ProcessarPagamentoAsync(GamePurchaseRequestedMessage message)
+    {
+        var pagamento = new Pagamento(message.UsuarioId, message.JogoId, message.Preco, nameof(StatusPagamento.Pendente));
+        
+        await _pagamentoRepository.AdicionarAsync(pagamento);
+        
+        // TODO gatilho para Azure Function que vai sumular o processamento do pagamento
     }
 }

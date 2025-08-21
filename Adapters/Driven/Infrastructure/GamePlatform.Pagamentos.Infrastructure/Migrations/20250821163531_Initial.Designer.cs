@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GamePlatform.Pagamentos.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250821095242_Initial")]
+    [Migration("20250821163531_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

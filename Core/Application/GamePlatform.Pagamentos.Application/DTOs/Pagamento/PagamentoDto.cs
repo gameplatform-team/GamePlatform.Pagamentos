@@ -1,3 +1,5 @@
+using GamePlatform.Pagamentos.Domain.Enums;
+
 namespace GamePlatform.Pagamentos.Application.DTOs.Pagamento;
 
 public class PagamentoDto
