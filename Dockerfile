@@ -37,4 +37,5 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 EXPOSE 8082
+ENV ASPNETCORE_URLS=http://+:8082
 ENTRYPOINT ["dotnet", "GamePlatform.Pagamentos.Api.dll"]
