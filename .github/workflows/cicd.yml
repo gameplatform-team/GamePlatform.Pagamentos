@@ -1,0 +1,74 @@
+name: CI/CD da API de Pagamentos
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOCKER_IMAGE_NAME: brunolazzara/gameplatform-pagamentos-fiap
+  ACA_RESOURCE_GROUP: gameplatform
+  ACA_NAME: gameplatform-pagamentos-api
+  ACA_TARGET_PORT: 8081
+  ACA_LOCATION: brazilsouth
+  ACA_ENVIRONMENT: gameplatform-apis
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+
+    - name: Configurar .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restaurar pacotes
+      run: dotnet restore GamePlatform.Pagamentos.sln
+
+    - name: Build
+      run: dotnet build GamePlatform.Pagamentos.sln --configuration Release --no-restore
+
+    - name: Testes
+      run: dotnet test Tests/GamePlatform.Pagamentos.Tests/GamePlatform.Pagamentos.Tests.csproj --verbosity normal
+
+  build-and-deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build e push Docker image
+        uses: docker/build-push-action@v6.18.0
+        with:
+          context: .
+          tags: ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+          push: true
+
+    #   - name: Login no Azure
+    #     uses: azure/login@v2
+    #     with:
+    #       creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    #   - name: Deploy para o Azure Container Apps
+    #     uses: azure/container-apps-deploy-action@v1
+    #     with:
+    #       resourceGroup: ${{ env.ACA_RESOURCE_GROUP }}
+    #       containerAppName: ${{ env.ACA_NAME }}
+    #       imageToDeploy: ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+    #       targetPort: ${{ env.ACA_TARGET_PORT }}
+    #       location: ${{ env.ACA_LOCATION }}
+    #       containerAppEnvironment: ${{ env.ACA_ENVIRONMENT }}
