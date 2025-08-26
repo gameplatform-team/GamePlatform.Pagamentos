@@ -24,6 +24,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamePlatform.Pagamentos.Infrastructure", "Adapters\Driven\Infrastructure\GamePlatform.Pagamentos.Infrastructure\GamePlatform.Pagamentos.Infrastructure.csproj", "{314A22F2-1509-4818-9759-ABCE43F9F84E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7D6F771F-5EBE-4C7C-AA74-E32FE77EA8E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamePlatform.Pagamentos.Tests", "Tests\GamePlatform.Pagamentos.Tests\GamePlatform.Pagamentos.Tests.csproj", "{395D626A-AE58-4C87-9C68-CC7C982DFAE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +44,7 @@ Global
 		{AFD9DB0F-F9AD-4079-A1FA-400EBF9DFB8A} = {650416FA-A7AB-49B7-9241-639FD3C2A933}
 		{28C49793-575A-4203-BECB-300274F04E5C} = {3F1A97BB-C32C-4184-9F61-2C5983EA5443}
 		{314A22F2-1509-4818-9759-ABCE43F9F84E} = {28C49793-575A-4203-BECB-300274F04E5C}
+		{395D626A-AE58-4C87-9C68-CC7C982DFAE8} = {7D6F771F-5EBE-4C7C-AA74-E32FE77EA8E2}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{15042603-9F06-46D3-BFBB-03C5C8E7349B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -58,5 +63,9 @@ Global
 		{314A22F2-1509-4818-9759-ABCE43F9F84E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{314A22F2-1509-4818-9759-ABCE43F9F84E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{314A22F2-1509-4818-9759-ABCE43F9F84E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{395D626A-AE58-4C87-9C68-CC7C982DFAE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{395D626A-AE58-4C87-9C68-CC7C982DFAE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{395D626A-AE58-4C87-9C68-CC7C982DFAE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{395D626A-AE58-4C87-9C68-CC7C982DFAE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
