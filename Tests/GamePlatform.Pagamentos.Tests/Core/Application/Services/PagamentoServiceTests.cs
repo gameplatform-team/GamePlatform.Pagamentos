@@ -4,6 +4,7 @@ using GamePlatform.Pagamentos.Application.Services;
 using GamePlatform.Pagamentos.Domain.Entities;
 using GamePlatform.Pagamentos.Domain.Enums;
 using GamePlatform.Pagamentos.Domain.Interfaces;
+using GamePlatform.Pagamentos.Domain.Interfaces.Messaging;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -13,11 +14,12 @@ public class PagamentoServiceTests
 {
     private readonly Mock<IPagamentoRepository> _pagamentoRepoMock = new();
     private readonly Mock<ILogger<PagamentoService>> _loggerMock = new();
+    private readonly Mock<IServiceBusPublisher> _publisherMock = new();
     private readonly PagamentoService _pagamentoService;
     
     public PagamentoServiceTests()
     {
-        _pagamentoService = new PagamentoService(_pagamentoRepoMock.Object, _loggerMock.Object);
+        _pagamentoService = new PagamentoService(_pagamentoRepoMock.Object, _loggerMock.Object, _publisherMock.Object);
     }
     
     [Fact]

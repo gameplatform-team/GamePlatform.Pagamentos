@@ -5,6 +5,7 @@ using GamePlatform.Pagamentos.Application.Interfaces.Services;
 using GamePlatform.Pagamentos.Domain.Entities;
 using GamePlatform.Pagamentos.Domain.Enums;
 using GamePlatform.Pagamentos.Domain.Interfaces;
+using GamePlatform.Pagamentos.Domain.Interfaces.Messaging;
 using Microsoft.Extensions.Logging;
 
 namespace GamePlatform.Pagamentos.Application.Services;
@@ -13,11 +14,16 @@ public class PagamentoService : IPagamentoService
 {
     private readonly IPagamentoRepository _pagamentoRepository;
     private readonly ILogger<PagamentoService> _logger;
+    private readonly IServiceBusPublisher _publisher;
 
-    public PagamentoService(IPagamentoRepository pagamentoRepository, ILogger<PagamentoService> logger)
+    public PagamentoService(
+        IPagamentoRepository pagamentoRepository,
+        ILogger<PagamentoService> logger,
+        IServiceBusPublisher publisher)
     {
         _pagamentoRepository = pagamentoRepository;
         _logger = logger;
+        _publisher = publisher;
     }
 
     public async Task<BaseResponseDto> ObterPorIdAsync(Guid id)
@@ -46,6 +52,18 @@ public class PagamentoService : IPagamentoService
         
         await _pagamentoRepository.AdicionarAsync(pagamento);
         
-        // TODO gatilho para Azure Function que vai sumular o processamento do pagamento
+        var processPaymentMessage = new PaymentToProcessMessage
+        {
+            PagamentoId = pagamento.Id,
+            Valor = pagamento.Valor
+        };
+        
+        await _publisher.PublishAsync(
+            queueName: "payment-to-process",
+            message: processPaymentMessage,
+            messageId: Guid.NewGuid().ToString(),
+            correlationId: pagamento.Id.ToString(),
+            ct: CancellationToken.None
+        );
     }
 }
