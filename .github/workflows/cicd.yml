@@ -10,7 +10,7 @@ env:
   DOCKER_IMAGE_NAME: brunolazzara/gameplatform-pagamentos-fiap
   ACA_RESOURCE_GROUP: gameplatform
   ACA_NAME: gameplatform-pagamentos-api
-  ACA_TARGET_PORT: 8081
+  ACA_TARGET_PORT: 8082
   ACA_LOCATION: brazilsouth
   ACA_ENVIRONMENT: gameplatform-apis
 
@@ -63,12 +63,12 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    #   - name: Deploy para o Azure Container Apps
-    #     uses: azure/container-apps-deploy-action@v1
-    #     with:
-    #       resourceGroup: ${{ env.ACA_RESOURCE_GROUP }}
-    #       containerAppName: ${{ env.ACA_NAME }}
-    #       imageToDeploy: ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-    #       targetPort: ${{ env.ACA_TARGET_PORT }}
-    #       location: ${{ env.ACA_LOCATION }}
-    #       containerAppEnvironment: ${{ env.ACA_ENVIRONMENT }}
+      - name: Deploy para o Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: ${{ env.ACA_RESOURCE_GROUP }}
+          containerAppName: ${{ env.ACA_NAME }}
+          imageToDeploy: ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+          targetPort: ${{ env.ACA_TARGET_PORT }}
+          location: ${{ env.ACA_LOCATION }}
+          containerAppEnvironment: ${{ env.ACA_ENVIRONMENT }}
