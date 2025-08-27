@@ -110,4 +110,22 @@ public class PagamentoService : IPagamentoService
             _logger.LogError(exception, "Erro ao processar resultado do pagamento (Exception={message}). Abandonando.", exception.Message);
         }
     }
+
+    public async Task<BaseResponseDto> ObterPagamentosDoUsuarioAsync(Guid usuarioId)
+    {
+        var pagamentos = await _pagamentoRepository.ObterPagamentosDoUsuarioAsync(usuarioId);
+        
+        var pagamentosDto = pagamentos.Select(p => new PagamentoDto
+        {
+            Id = p.JogoId,
+            UsuarioId = p.UsuarioId,
+            JogoId = p.JogoId,
+            Status = p.Status,
+            Valor = p.Valor,
+            CreatedAt = p.CreatedAt
+        }).ToList();
+        
+        var mensagem = pagamentosDto.Count == 0 ? "Nenhum pagamento realizado" : string.Empty;
+        return new DataResponseDto<List<PagamentoDto>>(true, mensagem, pagamentosDto);
+    }
 }

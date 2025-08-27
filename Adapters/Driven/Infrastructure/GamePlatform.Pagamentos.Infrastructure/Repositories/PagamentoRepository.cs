@@ -1,6 +1,7 @@
 using GamePlatform.Pagamentos.Domain.Entities;
 using GamePlatform.Pagamentos.Domain.Interfaces;
 using GamePlatform.Pagamentos.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePlatform.Pagamentos.Infrastructure.Repositories;
 
@@ -27,5 +28,12 @@ public class PagamentoRepository : IPagamentoRepository
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Pagamento>> ObterPagamentosDoUsuarioAsync(Guid usuarioId)
+    {
+        return await _context.Pagamentos
+            .Where(p => p.UsuarioId == usuarioId)
+            .ToListAsync();
     }
 }

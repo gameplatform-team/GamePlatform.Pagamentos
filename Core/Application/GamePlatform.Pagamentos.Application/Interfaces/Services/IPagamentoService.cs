@@ -8,4 +8,5 @@ public interface IPagamentoService
     public Task<BaseResponseDto> ObterPorIdAsync(Guid id);
     public Task ProcessarPagamentoAsync(GamePurchaseRequestedMessage message);
     public Task AtualizarResultadoPagamentoAsync(PaymentProcessingResultMessage message);
+    public Task<BaseResponseDto> ObterPagamentosDoUsuarioAsync(Guid usuarioId);
 }

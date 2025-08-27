@@ -13,10 +13,12 @@ namespace GamePlatform.Pagamentos.Api.Controllers;
 public class PagamentosController : ControllerBase
 {
     private readonly IPagamentoService _pagamentoService;
+    private readonly IUsuarioContextService _usuarioContext;
 
-    public PagamentosController(IPagamentoService pagamentoService)
+    public PagamentosController(IPagamentoService pagamentoService, IUsuarioContextService usuarioContext)
     {
         _pagamentoService = pagamentoService;
+        _usuarioContext = usuarioContext;
     }
 
     /// <summary>
@@ -33,5 +35,19 @@ public class PagamentosController : ControllerBase
     {
         var resultado = await _pagamentoService.ObterPorIdAsync(id);
         return !resultado.Sucesso ? NotFound(resultado) : Ok(resultado);
+    }
+
+    /// <summary>
+    /// Obtém lista de pagamentos realizados pelo usuário logado
+    /// </summary>
+    /// <response code="200">Lista de pagamentos do usuário</response>
+    [ProducesResponseType(typeof(DataResponseDto<List<PagamentoDto>>), 200)]
+    [HttpGet("usuario")]
+    [Authorize]
+    public async Task<IActionResult> GetPagamentosUsuarioAsync()
+    {
+        var usuarioId = _usuarioContext.GetUsuarioId();
+        var resultado = await _pagamentoService.ObterPagamentosDoUsuarioAsync(usuarioId);
+        return !resultado.Sucesso ? BadRequest(resultado) : Ok(resultado);
     }
 }
