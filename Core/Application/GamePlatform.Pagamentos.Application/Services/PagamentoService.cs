@@ -48,22 +48,66 @@ public class PagamentoService : IPagamentoService
 
     public async Task ProcessarPagamentoAsync(GamePurchaseRequestedMessage message)
     {
-        var pagamento = new Pagamento(message.UsuarioId, message.JogoId, message.Preco, nameof(StatusPagamento.Pendente));
-        
-        await _pagamentoRepository.AdicionarAsync(pagamento);
-        
-        var processPaymentMessage = new PaymentToProcessMessage
+        try
         {
-            PagamentoId = pagamento.Id,
-            Valor = pagamento.Valor
-        };
+            var pagamento = new Pagamento(message.UsuarioId, message.JogoId, message.Preco, nameof(StatusPagamento.Pendente));
         
-        await _publisher.PublishAsync(
-            queueName: "payment-to-process",
-            message: processPaymentMessage,
-            messageId: Guid.NewGuid().ToString(),
-            correlationId: pagamento.Id.ToString(),
-            ct: CancellationToken.None
-        );
+            await _pagamentoRepository.AdicionarAsync(pagamento);
+        
+            var processPaymentMessage = new PaymentToProcessMessage
+            {
+                PagamentoId = pagamento.Id,
+                Valor = pagamento.Valor
+            };
+        
+            await _publisher.PublishAsync(
+                queueName: "payment-to-process",
+                message: processPaymentMessage,
+                messageId: Guid.NewGuid().ToString(),
+                correlationId: pagamento.Id.ToString(),
+                ct: CancellationToken.None
+            );
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Erro ao processar o pagamento (Exception={message}). Abandonando.", exception.Message);
+        }
+    }
+
+    public async Task AtualizarResultadoPagamentoAsync(PaymentProcessingResultMessage resultadoPagamento)
+    {
+        try
+        {
+            var pagamento = await _pagamentoRepository.ObterPorIdAsync(resultadoPagamento.PagamentoId);
+            if (pagamento == null)
+                throw new KeyNotFoundException("Pagamento não encontrado.");
+
+            var novoStatus = resultadoPagamento.Sucesso ? nameof(StatusPagamento.Aprovado) : nameof(StatusPagamento.Reprovado);
+        
+            pagamento.AtualizarStatus(novoStatus);
+        
+            await _pagamentoRepository.SaveChangesAsync();
+            
+            if (!resultadoPagamento.Sucesso)
+                return;
+            
+            var paymentSuccessMessage = new PaymentSuccessMessage
+            {
+                UsuarioId = pagamento.UsuarioId,
+                JogoId = pagamento.JogoId
+            };
+        
+            await _publisher.PublishAsync(
+                queueName: "payment-success",
+                message: paymentSuccessMessage,
+                messageId: Guid.NewGuid().ToString(),
+                correlationId: pagamento.Id.ToString(),
+                ct: CancellationToken.None
+            );
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Erro ao processar resultado do pagamento (Exception={message}). Abandonando.", exception.Message);
+        }
     }
 }

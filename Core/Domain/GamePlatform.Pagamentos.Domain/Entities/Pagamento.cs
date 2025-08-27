@@ -16,4 +16,10 @@ public class Pagamento : BaseEntity
     public Guid JogoId { get; private set; }
     public decimal Valor { get; private set; }
     public string Status { get; private set; }
+
+    public void AtualizarStatus(string status)
+    {
+        Status = status;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

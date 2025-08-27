@@ -6,4 +6,5 @@ public interface IPagamentoRepository
 {
     public Task<Pagamento?> ObterPorIdAsync(Guid id);
     public Task AdicionarAsync(Pagamento pagamento);
+    public Task SaveChangesAsync();
 }

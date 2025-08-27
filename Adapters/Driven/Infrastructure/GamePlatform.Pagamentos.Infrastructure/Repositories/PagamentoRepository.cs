@@ -21,6 +21,11 @@ public class PagamentoRepository : IPagamentoRepository
     public async Task AdicionarAsync(Pagamento pagamento)
     {
         await _context.Pagamentos.AddAsync(pagamento);
+        await SaveChangesAsync();
+    }
+
+    public async Task SaveChangesAsync()
+    {
         await _context.SaveChangesAsync();
     }
 }

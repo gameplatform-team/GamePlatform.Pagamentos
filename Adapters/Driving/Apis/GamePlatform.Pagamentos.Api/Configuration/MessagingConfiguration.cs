@@ -20,6 +20,7 @@ public static class MessagingConfiguration
             return new ServiceBusClient(opts.ConnectionString);
         });
         services.AddHostedService<GamePurchaseRequestedBackgroundService>();
+        services.AddHostedService<PaymentProcessingResultBackgroundService>();
 
         return services;
     }
