@@ -117,7 +117,7 @@ public class PagamentoService : IPagamentoService
         
         var pagamentosDto = pagamentos.Select(p => new PagamentoDto
         {
-            Id = p.JogoId,
+            Id = p.Id,
             UsuarioId = p.UsuarioId,
             JogoId = p.JogoId,
             Status = p.Status,
