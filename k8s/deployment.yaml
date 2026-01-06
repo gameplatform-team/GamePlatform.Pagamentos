@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gameplatform-pagamentos
+  labels:
+    app: gameplatform-pagamentos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gameplatform-pagamentos
+  template:
+    metadata:
+      labels:
+        app: gameplatform-pagamentos
+    spec:
+      containers:
+      - name: gameplatform-pagamentos
+        image: IMAGE_PLACEHOLDER
+        ports:
+        - containerPort: 8082
+        envFrom:
+        - secretRef:
+            name: gameplatform-pagamentos-secret
