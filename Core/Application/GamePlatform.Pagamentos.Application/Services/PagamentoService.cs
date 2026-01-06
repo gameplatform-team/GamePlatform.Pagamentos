@@ -12,6 +12,9 @@ namespace GamePlatform.Pagamentos.Application.Services;
 
 public class PagamentoService : IPagamentoService
 {
+    private const string PaymentToProcessQueue = "payment-to-process";
+    private const string PaymentSuccessQueue = "payment-success";
+    
     private readonly IPagamentoRepository _pagamentoRepository;
     private readonly ILogger<PagamentoService> _logger;
     private readonly IServiceBusPublisher _publisher;
@@ -60,13 +63,19 @@ public class PagamentoService : IPagamentoService
                 Valor = pagamento.Valor
             };
         
+            var messageId = Guid.NewGuid().ToString();
+            var pagamentoId = pagamento.Id.ToString();
             await _publisher.PublishAsync(
-                queueName: "payment-to-process",
+                queueName: PaymentToProcessQueue,
                 message: processPaymentMessage,
-                messageId: Guid.NewGuid().ToString(),
-                correlationId: pagamento.Id.ToString(),
+                messageId: messageId,
+                correlationId: pagamentoId,
                 ct: CancellationToken.None
             );
+            
+            _logger.LogInformation(
+                "Mensagem para iniciar processamento de pagamento publicada na fila {PaymentToProcessQueue}. MessageId: {messageId}, PagamentoId: {pagamentoId}.",
+                PaymentToProcessQueue, messageId, pagamentoId);
         }
         catch (Exception exception)
         {
@@ -97,13 +106,19 @@ public class PagamentoService : IPagamentoService
                 JogoId = pagamento.JogoId
             };
         
+            var messageId = Guid.NewGuid().ToString();
+            var pagamentoId = pagamento.Id.ToString();
             await _publisher.PublishAsync(
                 queueName: "payment-success",
                 message: paymentSuccessMessage,
-                messageId: Guid.NewGuid().ToString(),
-                correlationId: pagamento.Id.ToString(),
+                messageId: messageId,
+                correlationId: pagamentoId,
                 ct: CancellationToken.None
             );
+            
+            _logger.LogInformation(
+                "Mensagem de sucesso do pagamento publicada na fila {PaymentSuccessQueue}. MessageId: {messageId}, PagamentoId: {pagamentoId}.",
+                PaymentSuccessQueue, messageId, pagamentoId);
         }
         catch (Exception exception)
         {

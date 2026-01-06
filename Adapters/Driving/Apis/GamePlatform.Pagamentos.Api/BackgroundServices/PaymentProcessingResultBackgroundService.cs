@@ -79,6 +79,13 @@ public class PaymentProcessingResultBackgroundService : BackgroundService
     
     private async Task OnMessageAsync(ProcessMessageEventArgs args)
     {
+        var messageId = args.Message.MessageId;
+        var correlationId = args.Message.CorrelationId;
+
+        _logger.LogInformation(
+            "Mensagem de resultado de pagamento recebida da fila {Queue}. MessageId: {MessageId}, CorrelationId: {CorrelationId}.",
+            _options.PaymentProcessingResultQueue, messageId, correlationId);
+        
         try
         {
             var body = args.Message.Body.ToString();
@@ -89,11 +96,11 @@ public class PaymentProcessingResultBackgroundService : BackgroundService
 
             if (message is null)
             {
-                _logger.LogWarning("Falha ao desserializar mensagem. Abandonando MessageId={MessageId}", args.Message.MessageId);
+                _logger.LogWarning("Falha ao desserializar mensagem. Abandonando MessageId={MessageId}", messageId);
                 await args.AbandonMessageAsync(args.Message);
                 return;
             }
-
+            
             using var scope = _scopeFactory.CreateScope();
             var pagamentoService = scope.ServiceProvider.GetRequiredService<IPagamentoService>();
             await pagamentoService.AtualizarResultadoPagamentoAsync(message);
@@ -102,7 +109,7 @@ public class PaymentProcessingResultBackgroundService : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao processar a mensagem (MessageId={MessageId}). Abandonando.", args.Message.MessageId);
+            _logger.LogError(ex, "Erro ao processar a mensagem (MessageId={MessageId}). Abandonando.", messageId);
             try { await args.AbandonMessageAsync(args.Message); } catch {  }
         }
     }
